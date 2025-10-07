@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="page-title">Country Similarity Recommendation</h1>
+
+{% if error %}
+<div class="alert alert-warning">{{ error }}</div>
+{% else %}
+<form class="card card-filter p-3 my-3" method="get">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-6">
+      <label class="form-label">Country</label>
+      <select class="form-select" name="country">
+        {% for c in countries %}
+          <option value="{{ c }}" {% if c == selected_country %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">Recommend</button>
+    </div>
+  </div>
+  </form>
+
+  {% if recs_table_html %}
+  <div class="card">
+    <div class="card-header">Top 5 Similar Countries</div>
+    <div class="card-body table-responsive">
+      {{ recs_table_html|safe }}
+      <div class="mt-3 chart-footer insight">
+        <p><strong>How to read:</strong> Countries are ranked by similarity to the selected country based on GDP growth, inflation, and credit rating.</p>
+        <p><strong>What it means:</strong> Higher similarity suggests comparable macro conditions and risk profile.</p>
+        <p><strong>Tip:</strong> Use this to find peers for benchmarking or diversification.</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+

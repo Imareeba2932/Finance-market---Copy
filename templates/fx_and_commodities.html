@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 d-flex align-items-baseline justify-content-between">
+    <div>
+      <h1 class="page-title">FX & Commodities Analysis</h1>
+      <p class="text-muted mb-0">View currency moves, commodities, and their macro links</p>
+    </div>
+  </div>
+
+  <div class="col-lg-3">
+    <form class="card card-filter p-3 sticky-sidebar" method="get">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">Filters</h6>
+        <a href="{{ url_for('fx_and_commodities') }}" class="btn btn-link btn-sm p-0">Reset</a>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Countries</label>
+        <select class="form-select" name="country" multiple size="8">
+          {% for c in meta.countries %}
+            <option value="{{ c }}" {% if c in selected.countries %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Ctrl/Cmd + click to multi-select</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Currencies</label>
+        <select class="form-select" name="currency" multiple size="6">
+          {% for cu in meta.currencies %}
+            <option value="{{ cu }}" {% if selected.currencies and cu in selected.currencies %}selected{% endif %}>{{ cu }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label">Start Date</label>
+          <input class="form-control" type="date" name="start_date" value="{{ selected.start_date or '' }}" />
+        </div>
+        <div class="col-6">
+          <label class="form-label">End Date</label>
+          <input class="form-control" type="date" name="end_date" value="{{ selected.end_date or '' }}" />
+        </div>
+      </div>
+      <button class="btn btn-primary w-100">Apply Filters</button>
+
+      <hr class="my-3" />
+      <div>
+        <div class="small text-muted mb-1">Selected</div>
+        <div class="d-flex flex-wrap gap-1">
+          {% for c in selected.countries %}
+            <span class="filter-chip">{{ c }}</span>
+          {% endfor %}
+          {% if selected.currencies %}
+            {% for cur in selected.currencies %}
+              <span class="filter-chip chip-muted">{{ cur }}</span>
+            {% endfor %}
+          {% endif %}
+          {% if selected.start_date or selected.end_date %}
+            <span class="filter-chip chip-date">{{ selected.start_date or '—' }} → {{ selected.end_date or '—' }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-9">
+    <div class="row g-3">
+      <div class="col-lg-6"><div class="card"><div class="card-header">Exchange Rate vs USD</div><div class="card-body">{{ bar_fx_level|safe if bar_fx_level else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Higher bars mean weaker local currency vs USD.</p><p><strong>Conclusion:</strong> Currency weakness can raise import costs and inflation.</p><p><strong>Tip:</strong> Track trends over time, not just the latest level.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Currency Change YTD (%)</div><div class="card-body">{{ bar_fx_ytd|safe if bar_fx_ytd else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Green means appreciation; red means depreciation this year.</p><p><strong>Conclusion:</strong> Consider FX impact when investing across countries.</p><p><strong>Tip:</strong> Level and YTD move together tell a fuller story.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Oil Price vs Commodity Index</div><div class="card-body">{{ scatter_oil|safe if scatter_oil else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Oil often trends with the broader commodity complex.</p><p><strong>Conclusion:</strong> Diversify across commodities; do not rely on a single driver.</p><p><strong>Tip:</strong> Check if outliers are due to shocks or data gaps.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Gold Price (USD/Oz) by Country</div><div class="card-body">{{ violin_gold|safe if violin_gold else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Gold levels are similar across countries, with some spread.</p><p><strong>Conclusion:</strong> Gold can help stabilize a portfolio in volatile times.</p><p><strong>Tip:</strong> Use gold with other diversifiers like bonds or cash.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">FX Heatmap</div><div class="card-body">{{ heatmap_fx|safe if heatmap_fx else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> FX level and YTD change may relate, but not perfectly.</p><p><strong>Conclusion:</strong> Look at both level and change before making a currency view.</p><p><strong>Tip:</strong> Negative correlation can hint at mean reversion.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Commodity vs Macro: Inflation</div><div class="card-body">{{ scatter_comm_infl|safe if scatter_comm_infl else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Higher commodity prices can lift inflation pressure.</p><p><strong>Conclusion:</strong> Watch policy responses when commodity prices rise.</p><p><strong>Tip:</strong> Check if energy drives the move vs broad commodities.</p></div></div></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

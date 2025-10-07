@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 d-flex align-items-baseline justify-content-between">
+    <div>
+      <h1 class="page-title">Macro & Interest Rates Analysis</h1>
+      <p class="text-muted mb-0">Explore growth, inflation, policy rates and relationships</p>
+    </div>
+  </div>
+
+  <div class="col-lg-3">
+    <form class="card card-filter p-3 sticky-sidebar" method="get">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">Filters</h6>
+        <a href="{{ url_for('macro_and_rates') }}" class="btn btn-link btn-sm p-0">Reset</a>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Countries</label>
+        <select class="form-select" name="country" multiple size="8">
+          {% for c in meta.countries %}
+            <option value="{{ c }}" {% if c in selected.countries %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Ctrl/Cmd + click to multi-select</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Credit Ratings</label>
+        <select class="form-select" name="rating" multiple size="6">
+          {% for r in meta.credit_ratings %}
+            <option value="{{ r }}" {% if r in selected.ratings %}selected{% endif %}>{{ r }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label class="form-label">Start Date</label>
+          <input class="form-control" type="date" name="start_date" value="{{ selected.start_date or '' }}" />
+        </div>
+        <div class="col-6">
+          <label class="form-label">End Date</label>
+          <input class="form-control" type="date" name="end_date" value="{{ selected.end_date or '' }}" />
+        </div>
+      </div>
+      <button class="btn btn-primary w-100">Apply Filters</button>
+
+      <hr class="my-3" />
+      <div>
+        <div class="small text-muted mb-1">Selected</div>
+        <div class="d-flex flex-wrap gap-1">
+          {% for c in selected.countries %}
+            <span class="filter-chip">{{ c }}</span>
+          {% endfor %}
+          {% for r in selected.ratings %}
+            <span class="filter-chip chip-muted">{{ r }}</span>
+          {% endfor %}
+          {% if selected.start_date or selected.end_date %}
+            <span class="filter-chip chip-date">{{ selected.start_date or '—' }} → {{ selected.end_date or '—' }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-9">
+    <div class="row g-3">
+      <div class="col-lg-6"><div class="card"><div class="card-header">GDP Growth (%)</div><div class="card-body">{{ bar_gdp|safe if bar_gdp else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Countries rank by growth rate; higher bars mean faster growth.</p><p><strong>Conclusion:</strong> Fast growth helps returns, but check if it is sustainable.</p><p><strong>Tip:</strong> Compare growth with inflation and jobs to see balance.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Inflation Rate (%)</div><div class="card-body">{{ bar_infl|safe if bar_infl else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Higher inflation can reduce purchasing power.</p><p><strong>Conclusion:</strong> Prefer lower, stable inflation for steadier policy and markets.</p><p><strong>Tip:</strong> Watch if policy rate is above/below inflation (real rate).</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Policy Interest Rate (%)</div><div class="card-body">{{ bar_policy|safe if bar_policy else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Central banks raise rates to fight inflation.</p><p><strong>Conclusion:</strong> Higher policy rates can slow growth but support currency.</p><p><strong>Tip:</strong> Compare policy rate to 10Y yield for curve shape.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Unemployment Rate (%) - Box</div><div class="card-body">{{ box_unemp|safe if box_unemp else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> The box shows typical unemployment; dots show extremes.</p><p><strong>Conclusion:</strong> Lower, stable unemployment often supports stronger demand.</p><p><strong>Tip:</strong> Outliers may signal shocks or measurement issues.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Inflation vs GDP Growth</div><div class="card-body">{{ scatter_infl_gdp|safe if scatter_infl_gdp else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Points show the link between price rises and growth.</p><p><strong>Conclusion:</strong> Balance is key—too high inflation can slow growth.</p><p><strong>Tip:</strong> Look for country clusters; not all economies behave the same.</p></div></div></div></div>
+      <div class="col-lg-6"><div class="card"><div class="card-header">Policy Rate vs 10Y Yield</div><div class="card-body">{{ scatter_policy_yield|safe if scatter_policy_yield else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 chart-footer insight"><p><strong>Insight:</strong> Long yields usually move with policy rates, but imperfectly.</p><p><strong>Conclusion:</strong> Use both to read the rate cycle and bond risk.</p><p><strong>Tip:</strong> A flat or inverted curve can signal slowdown risks.</p></div></div></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
