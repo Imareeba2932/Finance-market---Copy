@@ -1,76 +1,168 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 d-flex align-items-baseline justify-content-between">
+  <div class="col-12 d-flex align-items-baseline justify-content-between mb-2">
     <div>
       <h1 class="page-title">Equity Markets Analysis</h1>
-      <p class="text-muted mb-0">Levels, daily changes, size, and relationships</p>
+      <p class="text-muted mb-0">Deep dive into market performance and relationships</p>
     </div>
   </div>
 
   <div class="col-lg-3">
     <form class="card card-filter p-3 sticky-sidebar" method="get">
       <div class="d-flex align-items-center justify-content-between mb-2">
-        <h6 class="mb-0">Filters</h6>
-        <a href="{{ url_for('equity_markets') }}" class="btn btn-link btn-sm p-0">Reset</a>
+        <h6 class="mb-0">Analysis Filters</h6>
+        <span class="small text-muted">Customize view</span>
       </div>
       <div class="mb-3">
-        <label class="form-label">Countries</label>
-        <select class="form-select" name="country" multiple size="8">
+        <label class="form-label d-flex justify-content-between">
+          <span>Countries</span>
+          <span class="small text-muted">{{ selected.countries|length or 0 }} selected</span>
+        </label>
+        <select class="form-select" name="country" multiple size="6">
           {% for c in meta.countries %}
             <option value="{{ c }}" {% if c in selected.countries %}selected{% endif %}>{{ c }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="mb-3">
-        <label class="form-label">Stock Indices</label>
-        <select class="form-select" name="index" multiple size="6">
+        <label class="form-label d-flex justify-content-between">
+          <span>Stock Indices</span>
+          <span class="small text-muted">{{ selected.indices|length or 0 }} selected</span>
+        </label>
+        <select class="form-select" name="index" multiple size="4">
           {% for i in meta.stock_indices %}
             <option value="{{ i }}" {% if i in selected.indices %}selected{% endif %}>{{ i }}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="row g-2 mb-3">
-        <div class="col-6">
-          <label class="form-label">Start Date</label>
-          <input class="form-control" type="date" name="start_date" value="{{ selected.start_date or '' }}" />
-        </div>
-        <div class="col-6">
-          <label class="form-label">End Date</label>
-          <input class="form-control" type="date" name="end_date" value="{{ selected.end_date or '' }}" />
+      <div class="mb-3">
+        <label class="form-label">Date Range</label>
+        <div class="row g-2">
+          <div class="col-6">
+            <input class="form-control" type="date" name="start_date" value="{{ selected.start_date or '' }}" />
+          </div>
+          <div class="col-6">
+            <input class="form-control" type="date" name="end_date" value="{{ selected.end_date or '' }}" />
+          </div>
         </div>
       </div>
       <button class="btn btn-primary w-100">Apply Filters</button>
 
-      <hr class="my-3" />
-      <div>
-        <div class="small text-muted mb-1">Selected</div>
-        <div class="d-flex flex-wrap gap-1">
-          {% for c in selected.countries %}
-            <span class="filter-chip">{{ c }}</span>
-          {% endfor %}
-          {% for i in selected.indices %}
-            <span class="filter-chip chip-muted">{{ i }}</span>
-          {% endfor %}
-          {% if selected.start_date or selected.end_date %}
-            <span class="filter-chip chip-date">{{ selected.start_date or '—' }} → {{ selected.end_date or '—' }}</span>
-          {% endif %}
-        </div>
-      </div>
+      
     </form>
   </div>
 
   <div class="col-lg-9">
-    <div class="row g-3">
-      <div class="col-lg-6"><div class="card"><div class="card-header">Index Value by Country</div><div class="card-body">{{ bar_index_value|safe if bar_index_value else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Countries rank by index level.</p><p><strong>Conclusion:</strong> High level ≠ high return; check change and valuation too.</p></div></div></div></div>
-      <div class="col-lg-6"><div class="card"><div class="card-header">Daily Change (%) by Country</div><div class="card-body">{{ bar_daily_change|safe if bar_daily_change else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Green is gain; red is loss today.</p><p><strong>Conclusion:</strong> Daily moves are noisy; combine with fundamentals.</p></div></div></div></div>
-      <div class="col-lg-6"><div class="card"><div class="card-header">Market Cap vs Index Value</div><div class="card-body">{{ scatter_cap_vs_index|safe if scatter_cap_vs_index else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Bubble size shows absolute daily move (|%|).</p><p><strong>Conclusion:</strong> Big markets can move little day-to-day; size isn’t stability.</p></div></div></div></div>
-      <div class="col-lg-6"><div class="card"><div class="card-header">Market Cap Treemap</div><div class="card-body">{{ treemap_cap|safe if treemap_cap else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Quickly spot which countries/indices dominate market cap.</p><p><strong>Conclusion:</strong> Diversify beyond a few heavy weights.</p></div></div></div></div>
-      <div class="col-lg-6"><div class="card"><div class="card-header">Index Value Distribution</div><div class="card-body">{{ box_index_value|safe if box_index_value else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Box shows typical range; dots show outliers.</p><p><strong>Conclusion:</strong> Treat extremes with caution in comparisons.</p></div></div></div></div>
-      <div class="col-lg-6"><div class="card"><div class="card-header">Equity Metrics Correlation</div><div class="card-body">{{ heatmap_corr|safe if heatmap_corr else '<div class=\"text-muted\">No data</div>' }}<div class="mt-3 insight"><p><strong>Insight:</strong> Cells highlight how metrics move together.</p><p><strong>Conclusion:</strong> Lower correlation can improve diversification.</p></div></div></div></div>
+    <div class="chart-grid">
+      <!-- Index Value by Country -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Index Value by Country</div>
+            <div class="chart-legend small text-muted">Higher is larger value</div>
+          </div>
+          <div class="card-body">
+            {{ bar_index_value|safe if bar_index_value else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Analysis</h6>
+              <p class="text-muted mb-1">Each bar represents the current index level for a country, providing a snapshot of relative market sizes.</p>
+              <div class="small text-muted">💡 Consider pairing with daily changes to identify momentum.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Change by Country -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Daily Performance (%)</div>
+            <div class="chart-legend small text-muted">Green: gain | Red: loss</div>
+          </div>
+          <div class="card-body">
+            {{ bar_daily_change|safe if bar_daily_change else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Key Insight</h6>
+              <p class="text-muted mb-1">Daily changes show market sentiment but can be volatile. Focus on patterns rather than single-day moves.</p>
+              <div class="small text-muted">💡 Compare with historical averages for context.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Cap vs Index -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Market Cap vs Index Value</div>
+            <div class="chart-legend small text-muted">Bubble: daily volatility</div>
+          </div>
+          <div class="card-body">
+            {{ scatter_cap_vs_index|safe if scatter_cap_vs_index else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Relationships</h6>
+              <p class="text-muted mb-1">Scatter plot reveals the relationship between market size and index levels. Bubble size indicates daily price movement magnitude.</p>
+              <div class="small text-muted">💡 Look for outliers that might signal valuation opportunities.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Cap Treemap -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Market Capitalization Distribution</div>
+            <div class="chart-legend small text-muted">Size ∝ market cap</div>
+          </div>
+          <div class="card-body">
+            {{ treemap_cap|safe if treemap_cap else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Market Structure</h6>
+              <p class="text-muted mb-1">Treemap visualization shows the relative size of each market, helping identify concentration risks.</p>
+              <div class="small text-muted">💡 Consider geographic diversification if heavily weighted to one region.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Value Distribution -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Index Value Distribution</div>
+            <div class="chart-legend small text-muted">Box: 25-75th percentile</div>
+          </div>
+          <div class="card-body">
+            {{ box_index_value|safe if box_index_value else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Statistical View</h6>
+              <p class="text-muted mb-1">Box plots show the spread of index values, highlighting typical ranges and potential outliers.</p>
+              <div class="small text-muted">💡 Wide boxes suggest higher historical volatility.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Correlation Heatmap -->
+      <div class="chart-section">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>Market Correlations</div>
+            <div class="chart-legend small text-muted">Dark: high correlation</div>
+          </div>
+          <div class="card-body">
+            {{ heatmap_corr|safe if heatmap_corr else '<div class="text-muted">No data available</div>' }}
+            <div class="chart-insights">
+              <h6>Relationships</h6>
+              <p class="text-muted mb-1">Heatmap shows how different markets move together, crucial for portfolio diversification.</p>
+              <div class="small text-muted">💡 Look for low correlations when building portfolios.</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 {% endblock %}
-
-

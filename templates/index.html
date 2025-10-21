@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="landing-hero">
+  <div class="landing-content">
+    <h1 class="landing-title">Global Financial Markets Intelligence</h1>
+    <p class="landing-description">
+      Explore comprehensive market data, economic indicators, and AI-powered insights across global financial markets. Make informed decisions with our interactive analytics dashboard.
+    </p>
+    <div class="landing-cta">
+      <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-graph-up-arrow me-2"></i>
+        Launch Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.landing-hero {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(to bottom,
+            rgba(15, 23, 42, 0.9),
+            rgba(15, 23, 42, 0.8)),
+        url('https://wallpaperaccess.com/full/1393727.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin-top: -56px; /* Adjust based on your navbar height */
+}
+
+.landing-content {
+    max-width: 800px;
+    text-align: center;
+    color: #ffffff;
+    animation: fadeIn 1s ease-out;
+}
+
+.landing-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    background: linear-gradient(45deg, #60a5fa, #3b82f6, #2563eb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.landing-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.landing-cta .btn {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #3b82f6, #2563eb);
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.landing-cta .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(45deg, #2563eb, #1d4ed8);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hide scrollbar but keep functionality */
+body {
+    overflow: hidden;
+}
+</style>
+{% endblock %}

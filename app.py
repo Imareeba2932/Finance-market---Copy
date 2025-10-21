@@ -38,7 +38,11 @@ def _plot_div(fig) -> str:
 
 
 @app.route("/")
-def home():
+def index():
+    return render_template("index.html")
+
+@app.route("/dashboard")
+def dashboard():
     df = load_data(DATA_PATH)
     meta = get_distinct_values(df)
     countries, ratings, date_filter = _get_query_params(meta)
@@ -89,7 +93,7 @@ def home():
         rel_scatter2_div = _plot_div(fig)
 
     return render_template(
-        "home.html",
+        "dashboard.html",
         meta=meta,
         selected={"countries": countries, "ratings": ratings, "start_date": request.args.get("start_date"), "end_date": request.args.get("end_date")},
         kpis=kpis,

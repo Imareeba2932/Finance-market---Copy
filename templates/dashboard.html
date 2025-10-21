@@ -8,7 +8,7 @@
       <div class="small text-muted">Updated: {{ last_updated or '—' }}</div>
     </div>
     <div class="d-flex gap-2">
-      <a class="btn btn-outline-secondary" href="{{ url_for('home') }}">Reset Filters</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('dashboard') }}">Reset Filters</a>
       <a class="btn btn-primary" href="#explore">Explore</a>
     </div>
   </header>
@@ -56,8 +56,6 @@
         <button class="btn btn-primary">Apply</button>
       </div>
     </form>
-
-    
   </aside>
 
   <main class="dashboard-main">
@@ -90,8 +88,6 @@
         </div>
       </div>
 
-      
-
       <div class="col-xl-6">
         <div class="card">
           <div class="card-header">Index vs Daily Change</div>
@@ -121,5 +117,3 @@
   </main>
 </div>
 {% endblock %}
-
-
